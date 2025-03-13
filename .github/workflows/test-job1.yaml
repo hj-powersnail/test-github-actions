@@ -10,7 +10,7 @@ jobs:
   job_A:
     runs-on: ubuntu-latest
     outputs:
-      my_output: ${{ steps.my_step.outputs.my_output }}
+      name: ${{ steps.my_step.outputs.name }}
     steps:
       - name: Do something and generate output
         id: my_step
@@ -23,11 +23,14 @@ jobs:
     permissions:
       issues: write
 
+    outputs:
+      tagname: ${{ steps.stepx.outputs.tagname }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Use the output from Job A
+        id: stepx
         run: |
           echo "The output from Job A is: ${{ needs.job_A.outputs.name }}" | ./post-new-issue.sh $GITHUB_REPOSITORY
           echo "tagname=1.1.0" >> $GITHUB_OUTPUT
