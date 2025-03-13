@@ -30,3 +30,19 @@ jobs:
       - name: Use the output from Job A
         run: |
           echo "The output from Job A is: ${{ needs.job_A.outputs.name }}" | ./post-new-issue.sh $GITHUB_REPOSITORY
+          echo "tagname=1.1.0" >> $GITHUB_OUTPUT
+
+  job_C:
+    runs-on: ubuntu-latest
+    needs: [job_A, job_B]
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: make and push tag
+        run: |
+          git tag "v${{needs.job_B.outputs.tagname}}"
+          git push origin tag "v${{needs.job_B.outputs.tagname}}"
