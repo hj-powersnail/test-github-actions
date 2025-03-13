@@ -16,7 +16,7 @@ jobs:
         id: my_step
         run: |
           # Set an output variable called 'my_output'
-          echo "::set-output name=my_output::Hello from Job A"
+          echo "name=my_output::Hello from Job A" >> $GITHUB_OUTPUT
 
   job_B:
     runs-on: ubuntu-latest
