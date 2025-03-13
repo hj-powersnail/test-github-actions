@@ -15,8 +15,7 @@ jobs:
       - name: Do something and generate output
         id: my_step
         run: |
-          # Set an output variable called 'my_output'
-          echo "name=my_output::Hello from Job A" >> $GITHUB_OUTPUT
+          echo "name=Hello from Job A" >> $GITHUB_OUTPUT
 
   job_B:
     runs-on: ubuntu-latest
@@ -30,4 +29,4 @@ jobs:
 
       - name: Use the output from Job A
         run: |
-          echo "The output from Job A is: ${{ jobs.job_A.outputs.my_output }}" | ./post-new-issue.sh $GITHUB_REPOSITORY_OWNER $GITHUB_REPOSITORY
+          echo "The output from Job A is: ${{ needs.job_A.outputs.name }}" | ./post-new-issue.sh $GITHUB_REPOSITORY_OWNER $GITHUB_REPOSITORY
