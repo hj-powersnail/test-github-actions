@@ -4,14 +4,12 @@ set -e
 
 # Ensure exactly 2 arguments (owner and repo) are provided.
 if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 <owner> <repo>"
+  echo "Usage: $0 <repo>"
   exit 1
 fi
 
-OWNER="$1"
-REPO="$2"
+REPO="$1"
 
-echo "OWNER: $OWNER"
 echo "REPO: $REPO"
 
 # Verify that GITHUB_TOKEN is set.
@@ -38,6 +36,6 @@ RESPONSE=$(curl -s -X POST \
   -H "Authorization: token ${GITHUB_TOKEN}" \
   -H "Content-Type: application/json" \
   -d "$JSON_PAYLOAD" \
-  "https://api.github.com/repos/${OWNER}/${REPO}/issues")
+  "https://api.github.com/repos/${REPO}/issues")
 
 echo "$RESPONSE"
