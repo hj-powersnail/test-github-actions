@@ -3,7 +3,7 @@ set -e
 
 
 # Ensure exactly 2 arguments (owner and repo) are provided.
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <repo>"
   exit 1
 fi
