@@ -27,4 +27,4 @@ jobs:
     steps:
       - name: Use the output from Job A
         run: |
-          echo "The output from Job A is: ${{ needs.job_A.outputs.my_output }}" | post-new-issue.sh $GITHUB_REPOSITORY_OWNER $GITHUB_REPOSITORY
+          echo "The output from Job A is: ${{ needs.job_A.outputs.my_output }}" | ./post-new-issue.sh $GITHUB_REPOSITORY_OWNER $GITHUB_REPOSITORY
