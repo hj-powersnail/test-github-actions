@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+
 # Ensure exactly 2 arguments (owner and repo) are provided.
 if [ "$#" -ne 2 ]; then
   echo "Usage: $0 <owner> <repo>"
@@ -9,6 +10,9 @@ fi
 
 OWNER="$1"
 REPO="$2"
+
+echo "OWNER: $OWNER"
+echo "REPO: $REPO"
 
 # Verify that GITHUB_TOKEN is set.
 if [ -z "$GITHUB_TOKEN" ]; then
