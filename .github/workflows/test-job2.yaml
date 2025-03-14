@@ -5,11 +5,7 @@ env:
   GITHUB_REPOSITORY: ${{ github.repository }}
 
 on:
-  # Manually trigger this workflow to open the release-tracking issue.
   workflow_dispatch: {}
-  # Trigger on issues events (we only care about closed issues).
-  issues:
-    types: [closed]
 
 jobs:
   # Job to create a release-tracking issue.
@@ -17,11 +13,9 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' }}
     name: Make a release plan
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-
     permissions:
       issues: write
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -32,37 +26,10 @@ jobs:
 
       - name: Make plan
         run: |
-          echo "Release Issue" > test.md
-          echo "Commit: ${{ github.sha }}" >>test.md
-          cat test.md | ./post-new-issue.sh $GITHUB_REPOSITORY
-
-  # Job to tag the commit when the release issue is closed.
-  tag_release:
-    if: ${{ github.event_name == 'issues' && github.event.action == 'closed' && github.event.issue.title == 'Release Issue' }}
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Extract commit hash from issue body
-        id: extract_commit
-        shell: bash
-        run: |
-          # Extract the commit hash from the first line of the issue body.
-          COMMIT_HASH=$(echo "${{ github.event.issue.body }}" | head -n1 | sed -e 's/^Commit: //')
-          echo "Commit hash extracted: $COMMIT_HASH"
-          echo "commit_hash=$COMMIT_HASH" >> "$GITHUB_OUTPUT"
-
-      - name: Checkout the extracted commit
-        uses: actions/checkout@v2
-        with:
-          # Check out the commit that was originally recorded in the issue body.
-          ref: ${{ steps.extract_commit.outputs.commit_hash }}
-          fetch-depth: 0
+          cat content | ./post-and-wait.sh "Release Plan" $GITHUB_REPOSITORY
 
       - name: Create and push the release tag
         run: |
-          # Tag the current commit as "release"
-          git tag release "${{ steps.extract_commit.outputs.commit_hash }}"
-          # Push the tag to the remote repository
+          version=$(cat content)
+          git tag release "$version"
           git push origin release
