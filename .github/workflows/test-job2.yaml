@@ -14,6 +14,7 @@ on:
 jobs:
   # Job to create a release-tracking issue.
   create_issue:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     name: Make a release plan
     runs-on: ubuntu-latest
     outputs:
