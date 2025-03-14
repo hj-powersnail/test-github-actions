@@ -1,15 +1,13 @@
 #!/bin/bash
 set -e
 
-
-# Ensure exactly 2 arguments (owner and repo) are provided.
+# Ensure exactly 1 argument (repo) is provided.
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <repo>"
   exit 1
 fi
 
 REPO="$1"
-
 echo "REPO: $REPO"
 
 # Verify that GITHUB_TOKEN is set.
@@ -18,18 +16,17 @@ if [ -z "$GITHUB_TOKEN" ]; then
   exit 1
 fi
 
-# Read the entire stdin as the issue content.
-ISSUE_BODY=$(cat)
-
-# Use the first non-empty line as the issue title.
-TITLE=$(echo "$ISSUE_BODY" | sed '/^[[:space:]]*$/d' | head -n 1)
-if [ -z "$TITLE" ]; then
-  TITLE="New issue"
+# Read the first line from stdin as the issue title.
+if ! read -r TITLE; then
+  echo "Error: No input provided for the issue."
+  exit 1
 fi
 
+# Read the rest of the stdin as the issue body.
+BODY=$(cat)
+
 # Build the JSON payload using jq for proper escaping.
-JSON_PAYLOAD=$(jq -n --arg title "$TITLE" --arg body "$ISSUE_BODY" \
-  '{title: $title, body: $body}')
+JSON_PAYLOAD=$(jq -n --arg title "$TITLE" --arg body "$BODY" '{title: $title, body: $body}')
 
 # Post the issue via GitHub API.
 RESPONSE=$(curl -s -X POST \
