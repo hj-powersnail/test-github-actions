@@ -33,3 +33,16 @@ jobs:
           version=$(cat content)
           git tag "v$version"
           git push origin "v$version"
+
+  deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+    needs: [create_issue]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/Iron
