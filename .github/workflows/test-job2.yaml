@@ -40,6 +40,9 @@ jobs:
   tag_release:
     if: ${{ github.event_name == 'issues' && github.event.action == 'closed' && github.event.issue.title == 'Release Issue' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - name: Extract commit hash from issue body
         id: extract_commit
@@ -57,14 +60,9 @@ jobs:
           ref: ${{ steps.extract_commit.outputs.commit_hash }}
           fetch-depth: 0
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
       - name: Create and push the release tag
         run: |
           # Tag the current commit as "release"
-          git tag release
+          git tag release "${{ steps.extract_commit.outputs.commit_hash }}"
           # Push the tag to the remote repository
           git push origin release
