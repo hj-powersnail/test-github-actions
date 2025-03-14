@@ -32,7 +32,8 @@ jobs:
       - name: Make plan
         run: |
           echo "Release Issue" > test.md
-          echo "Commit: ${{ github.sha }}" | ./post-new-issue.sh $GITHUB_REPOSITORY
+          echo "Commit: ${{ github.sha }}" >>test.md
+          cat test.md | ./post-new-issue.sh $GITHUB_REPOSITORY
 
   # Job to tag the commit when the release issue is closed.
   tag_release:
