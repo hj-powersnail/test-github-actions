@@ -12,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create Release Sign-off Issue
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issueTitle = "Release: Sign-off tasks";
             const issueBody = "This issue tracks the tasks required to sign off a release. When all tasks are done, close this issue (with the label ‘completed’) to tag the current commit with ‘release’.";
