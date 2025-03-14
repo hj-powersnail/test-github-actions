@@ -12,8 +12,6 @@ jobs:
   create_issue:
     name: Make a release plan
     runs-on: ubuntu-latest
-    environment: prod
-    needs: build-submit-release
     outputs:
       version: ${{ steps.get_version.outputs.version }}
 
