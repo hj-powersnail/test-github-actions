@@ -1,0 +1,46 @@
+name: Release Workflow
+
+on:
+  push:
+    branches: [ main ]
+  issues:
+    types: [ closed ]
+
+jobs:
+  create_release_issue:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release Sign-off Issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issueTitle = "Release: Sign-off tasks";
+            const issueBody = "This issue tracks the tasks required to sign off a release. When all tasks are done, close this issue (with the label ‘completed’) to tag the current commit with ‘release’.";
+            const { data: issue } = await github.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: issueTitle,
+              body: issueBody
+            });
+            console.log("Created issue:", issue.html_url);
+
+  tag_release:
+    if: github.event.issue.state == 'closed' && contains(join(github.event.issue.labels.*.name, ','), 'completed')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+      
+      - name: Tag current commit with release and push tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch --all --tags
+          git tag release
+          git push origin release
