@@ -10,20 +10,26 @@ on:
 jobs:
   # Job to create a release-tracking issue.
   create_issue:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    name: Make a release plan
     runs-on: ubuntu-latest
+    environment: prod
+    needs: build-submit-release
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+
+    permissions:
+      issues: write
+
     steps:
-      - name: Create release-tracking issue
-        uses: peter-evans/create-issue@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "Release Issue"
-          body: |
-            Commit: ${{ github.sha }}
-            
-            This issue tracks the release. Once the related work is completed,
-            please close this issue as completed to trigger tagging of the above commit
-            with the "release" tag.
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Make plan
+        run: |
+          echo "Release Issue\n\nCommit: ${{ github.sha }}" | ./toolscripts/post-new-issue.sh $GITHUB_REPOSITORY
 
   # Job to tag the commit when the release issue is closed.
   tag_release:
@@ -57,4 +63,3 @@ jobs:
           git tag release
           # Push the tag to the remote repository
           git push origin release
-
