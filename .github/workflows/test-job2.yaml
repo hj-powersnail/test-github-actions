@@ -31,5 +31,5 @@ jobs:
       - name: Create and push the release tag
         run: |
           version=$(cat content)
-          git tag release "$version"
-          git push origin release
+          git tag "v$version"
+          git push origin "v$version"
