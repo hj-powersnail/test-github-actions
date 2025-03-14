@@ -1,5 +1,9 @@
 name: Issue to Release Tag
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_REPOSITORY: ${{ github.repository }}
+
 on:
   # Manually trigger this workflow to open the release-tracking issue.
   workflow_dispatch: {}
